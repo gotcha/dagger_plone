@@ -9,13 +9,13 @@ DEFAULT_BUILDOUT_CONTENT = """
 @object_type
 class Plone:
     @function
-    def with_buildout(self, python: dagger.Container, buildout_version: str="4.1.9") -> dagger.Container:
+    def with_buildout(self, python: dagger.Container, buildout_version: str="4.1.9", setuptools_version: str="80.2.0") -> dagger.Container:
         """Returns a container with buildout installed"""
         assert python.with_exec("python --version".split())
         return (python
           .with_exec(["apt-get", "update"])
           .with_exec("python -m venv /app".split())
-          .with_exec(f"/app/bin/pip install zc.buildout=={buildout_version}".split())
+          .with_exec(f"/app/bin/pip install zc.buildout=={buildout_version} setuptools=={setuptools_version}".split())
         )
 
     @function
