@@ -15,7 +15,7 @@ class Plone:
         return (python
           .with_exec(["apt-get", "update"])
           .with_exec("python -m venv /app".split())
-          .with_exec("/app/bin/pip install zc.buildout==${buildout_version}".split())
+          .with_exec(f"/app/bin/pip install zc.buildout=={buildout_version}".split())
         )
 
     @function
