@@ -7,9 +7,11 @@ describe('Plone site', () => {
     cy.wait(100)
     cy.get('body').then($body => {
 	if (!$body.find('.sites').text().includes('Existing Sites')) {
+	    cy.log('Make new Plone site')
 	    cy.make_site(host)
 	}
     })
+    cy.log('Visit Plone site')
     cy.visit(`http://admin:admin@${host}/Plone`)
     cy.contains('Welcome')
     cy.get('#personaltools-menulink').click()

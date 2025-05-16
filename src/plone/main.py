@@ -53,6 +53,7 @@ class Plone:
           .with_directory('/app', source)
           .with_workdir('/app')
           .with_service_binding('plone', self.as_service())
+          .with_exec("npm install cypress-terminal-report".split())
           .with_exec("cypress run --env PLONE_HOST=plone:8080 -s cypress/e2e/plone*".split())
         )
         return cypress.stdout()
