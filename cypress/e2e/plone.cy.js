@@ -23,5 +23,6 @@ describe('Plone site', () => {
     cy.contains('Show language flags')
     cy.contains('Cancel').click()
     cy.url().should('eq', `http://${host}/Plone/@@overview-controlpanel`)
+    cy.contains('Changes canceled.')
   })
 })
