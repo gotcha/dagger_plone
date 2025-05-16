@@ -1,0 +1,5 @@
+python_ctr=$(container | from python:3.12)
+buildout_ctr=$(with-buildout $python_ctr)
+plone_ctr=$(with-plone $buildout_ctr --plone-version 6.1.0)
+plone_srv=$($plone_ctr | as-service --args bin/instance,fg)
+$plone_srv | up --ports 8082:8080

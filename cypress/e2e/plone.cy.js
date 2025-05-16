@@ -1,0 +1,27 @@
+describe('Plone site', () => {
+  it('passes', () => {
+    var host = Cypress.env("PLONE_HOST")
+    cy.intercept('GET', '/@sites').as('sitesCall')
+    cy.visit(`http://${host}/`)
+    cy.wait('@sitesCall').its('response.statusCode').should('eq', 200)
+    cy.wait(100)
+    cy.get('body').then($body => {
+	if (!$body.find('.sites').text().includes('Existing Sites')) {
+	    cy.make_site(host)
+	}
+    })
+    cy.visit(`http://admin:admin@${host}/Plone`)
+    cy.contains('Welcome')
+    cy.get('#personaltools-menulink').click()
+    cy.get('#personaltools-plone_setup').should('be.visible').click()
+    cy.url().should('eq', `http://${host}/Plone/@@overview-controlpanel`)
+    cy.get('#content').contains('Site Setup')
+    cy.contains('General').click()
+    cy.get('.dropdown-menu').should('be.visible').contains('Language').click()
+    cy.url().should('eq', `http://${host}/Plone/@@language-controlpanel`)
+    cy.contains('Language Settings')
+    cy.contains('Show language flags')
+    cy.contains('Cancel').click()
+    cy.url().should('eq', `http://${host}/Plone/@@overview-controlpanel`)
+  })
+})
