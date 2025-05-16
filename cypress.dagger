@@ -1,5 +1,3 @@
 .echo FROM $(default-base-image)
 .echo
-plone_srv=$(as-service)
-cypress_dir=$(git https://github.com/gotcha/dagger_plone | head | tree)
-container | from cypress/included | with-directory /app $cypress_dir  | with-workdir /app | with-service-binding plone $plone_srv | with-exec -- cypress run --env PLONE_HOST=plone:8080 -s cypress/e2e/plone* | stdout
+run-cypress $(cypress-directory)

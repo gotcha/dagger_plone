@@ -43,5 +43,21 @@ class Plone:
 
     @function
     def default_base_image(self) -> str:
+        """Returns the default base image used to build Plone"""
         return DEFAULT_BASE_IMAGE
 
+    @function
+    def run_cypress(self, source: dagger.Directory) -> str:
+        """Run cypress tests against Plone"""
+        cypress = (dag.container().from_('cypress/included')
+          .with_directory('/app', source)
+          .with_workdir('/app')
+          .with_service_binding('plone', self.as_service())
+          .with_exec("cypress run --env PLONE_HOST=plone:8080 -s cypress/e2e/plone*".split())
+        )
+        return cypress.stdout()
+
+    @function
+    def cypress_directory(self) -> dagger.Directory:
+        """Returns module as a directory source for cypress tests"""
+        return dag.git("https://github.com/gotcha/dagger_plone").head().tree()
