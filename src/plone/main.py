@@ -47,16 +47,16 @@ class Plone:
         return DEFAULT_BASE_IMAGE
 
     @function
-    def run_cypress(self, source: dagger.Directory) -> str:
+    async def run_cypress(self, source: dagger.Directory, plone_service: dagger.Service) -> str:
         """Run cypress tests against Plone"""
         cypress = (dag.container().from_('cypress/included')
           .with_directory('/app', source)
           .with_workdir('/app')
-          .with_service_binding('plone', self.as_service())
+          .with_service_binding('plone', plone_service)
           .with_exec("npm install cypress-terminal-report".split())
           .with_exec("cypress run --env PLONE_HOST=plone:8080 -s cypress/e2e/plone*".split())
         )
-        return cypress.stdout()
+        return await cypress.stdout()
 
     @function
     def cypress_directory(self) -> dagger.Directory:
