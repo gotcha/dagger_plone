@@ -1,0 +1,4 @@
+python=$(container | from python:3.12)
+buildout=$(with-buildout --buildout-version 5.0.0a3 $python)
+plone_service=$(with-plone $buildout --plone-version 6.1.2 | as-service --args=bin/instance,fg)
+run-cypress $(host | directory .) $plone_service

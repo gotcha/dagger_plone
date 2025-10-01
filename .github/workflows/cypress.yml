@@ -3,13 +3,23 @@ name: Cypress
 on: push
 
 jobs:
-  cypress:
+  plone-e2e:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Integration Test
+      - name: Integration tests for Plone 6.1.1
         uses: dagger/dagger-for-github@8.0.0
         with:
           verb: shell
           args: cypress.dagger
+          version: "latest"  # semver x.y.z
+  plone-6-1-2-e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Integration tests for Plone 6.1.2
+        uses: dagger/dagger-for-github@8.0.0
+        with:
+          verb: shell
+          args: cypress-6.1.2.dagger
           version: "latest"  # semver x.y.z
