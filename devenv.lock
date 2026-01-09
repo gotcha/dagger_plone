@@ -1,5 +1,24 @@
 {
   "nodes": {
+    "dagger-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1767828339,
+        "owner": "dagger",
+        "repo": "nix",
+        "rev": "6906a3d0b8ee02a5f9565cbea0f372f8c99e4146",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dagger",
+        "repo": "nix",
+        "type": "github"
+      }
+    },
     "devenv": {
       "locked": {
         "dir": "src/modules",
@@ -16,6 +35,21 @@
         "type": "github"
       }
     },
+    "devenv-dagger": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1767975514,
+        "owner": "jfroche",
+        "repo": "devenv-dagger",
+        "rev": "b97d991f34bc8f967a81c10576a0e2c6fe3bd002",
+        "type": "github"
+      },
+      "original": {
+        "owner": "jfroche",
+        "repo": "devenv-dagger",
+        "type": "github"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -28,26 +62,6 @@
       "original": {
         "owner": "edolstra",
         "repo": "flake-compat",
-        "type": "github"
-      }
-    },
-    "flake-parts": {
-      "inputs": {
-        "nixpkgs-lib": [
-          "nur",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1756770412,
-        "owner": "hercules-ci",
-        "repo": "flake-parts",
-        "rev": "4524271976b625a4a605beefd893f270620fd751",
-        "type": "github"
-      },
-      "original": {
-        "owner": "hercules-ci",
-        "repo": "flake-parts",
         "type": "github"
       }
     },
@@ -107,32 +121,13 @@
         "type": "github"
       }
     },
-    "nur": {
-      "inputs": {
-        "flake-parts": "flake-parts",
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1759314389,
-        "owner": "nix-community",
-        "repo": "NUR",
-        "rev": "93d454a976a606063c18d49da8aff4801b6be632",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-community",
-        "repo": "NUR",
-        "type": "github"
-      }
-    },
     "root": {
       "inputs": {
+        "dagger-nix": "dagger-nix",
         "devenv": "devenv",
+        "devenv-dagger": "devenv-dagger",
         "git-hooks": "git-hooks",
         "nixpkgs": "nixpkgs",
-        "nur": "nur",
         "pre-commit-hooks": [
           "git-hooks"
         ]

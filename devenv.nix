@@ -7,7 +7,6 @@
   # https://devenv.sh/packages/
   packages = [
     pkgs.git
-    pkgs.nur.repos.dagger.dagger
   ];
 
   # https://devenv.sh/languages/
@@ -17,6 +16,8 @@
   # processes.dev.exec = "${lib.getExe pkgs.watchexec} -n -- ls -la";
 
   # https://devenv.sh/services/
+  services.dagger.enable = true;
+
   # services.postgres.enable = true;
 
   # https://devenv.sh/scripts/
