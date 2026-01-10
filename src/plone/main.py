@@ -34,11 +34,26 @@ class Plone:
         )
 
     @function
+    def with_zope(self, buildout: dagger.Container, plone_version: str="6.0.15") -> dagger.Container:
+        """Install Zope into a container where buildout is installed."""
+        buildout.directory('/app')
+        buildout.directory('/app/bin')
+        buildout.file('/app/bin/python')
+        buildout.file('/app/bin/buildout')
+        buildout_cfg = dag.file('buildout.cfg', DEFAULT_BUILDOUT_CONTENT)
+        return (buildout
+          .with_workdir("/app")
+          .with_file("/app/buildout.cfg", buildout_cfg)
+          .with_exec(f"/app/bin/buildout instance:recipe=plone.recipe.zope2instance instance:eggs= buildout:parts= buildout:extends=https://dist.plone.org/release/{plone_version}/versions.cfg instance:user=admin:admin install instance".split())
+        )
+
+    @function
     def as_service(self, base_image: str=DEFAULT_BASE_IMAGE, plone_version: str="6.1.1") -> dagger.Service:
         """Run Plone as a service"""
         python = dag.container().from_(base_image)
         buildout = self.with_buildout(python)
-        plone = self.with_plone(buildout, plone_version=plone_version)
+        zope = self.with_zope(buildout, plone_version=plone_version)
+        plone = self.with_plone(zope, plone_version=plone_version)
         return plone.as_service(args="bin/instance fg".split())
 
     @function
