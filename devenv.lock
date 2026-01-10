@@ -38,10 +38,10 @@
     "devenv-dagger": {
       "flake": false,
       "locked": {
-        "lastModified": 1767975514,
+        "lastModified": 1768028701,
         "owner": "jfroche",
         "repo": "devenv-dagger",
-        "rev": "b97d991f34bc8f967a81c10576a0e2c6fe3bd002",
+        "rev": "628509bc1dcbccb55060915e636c4b661747c668",
         "type": "github"
       },
       "original": {
