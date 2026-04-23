@@ -1,7 +1,8 @@
 {
   "name": "plone",
-  "engineVersion": "v0.18.5",
+  "engineVersion": "v0.20.6",
   "sdk": {
     "source": "python"
-  }
+  },
+  "include": ["src/**", "dagger.json"]
 }
