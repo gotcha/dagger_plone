@@ -26,13 +26,19 @@ class Plone:
         buildout.file('/app/bin/python')
         buildout.file('/app/bin/buildout')
         buildout_cfg = dag.file('buildout.cfg', DEFAULT_BUILDOUT_CONTENT)
-        return (buildout
-          .with_workdir("/app")
-          .with_file("/app/buildout.cfg", buildout_cfg)
-          .with_service_binding('devpi', self.devpi_as_service(volume_name=devpi_volume))
-          .with_exec(f"/app/bin/buildout buildout:index=http://devpi:3141/root/pypi/+simple instance:recipe=plone.recipe.zope2instance versions:zc.buildout= versions.setuptools= instance:eggs=Plone buildout:parts= buildout:extends=https://dist.plone.org/release/{plone_version}/versions.cfg instance:user=admin:admin install instance".split())
-          .with_exposed_port(8080)
-        )
+        devpi_service = self.devpi_as_service(volume_name=devpi_volume)
+        devpi_service.start()
+        try:
+            result = (buildout
+              .with_workdir("/app")
+              .with_file("/app/buildout.cfg", buildout_cfg)
+              .with_service_binding("devpi", devpi_service) 
+              .with_exec(f"/app/bin/buildout buildout:index=http://devpi:3141/root/pypi/+simple instance:recipe=plone.recipe.zope2instance versions:zc.buildout= versions.setuptools= instance:eggs=Plone buildout:parts= buildout:extends=https://dist.plone.org/release/{plone_version}/versions.cfg instance:user=admin:admin install instance".split())
+              .with_exposed_port(8080)
+            )
+        finally:
+            devpi_service.stop()
+        return result
 
     @function
     def with_zope(self, buildout: dagger.Container, plone_version: str="6.0.15", devpi_volume: str="devpi_data") -> dagger.Container:
@@ -42,13 +48,19 @@ class Plone:
         buildout.file('/app/bin/python')
         buildout.file('/app/bin/buildout')
         buildout_cfg = dag.file('buildout.cfg', DEFAULT_BUILDOUT_CONTENT)
-        return (buildout
-          .with_workdir("/app")
-          .with_file("/app/buildout.cfg", buildout_cfg)
-          .with_service_binding('devpi', self.devpi_as_service(volume_name=devpi_volume))
-          .with_exec(f"/app/bin/buildout buildout:index=http://devpi:3141/root/pypi/+simple versions:zc.buildout= versions.setuptools= instance:recipe=plone.recipe.zope2instance instance:eggs= buildout:parts= buildout:extends=https://dist.plone.org/release/{plone_version}/versions.cfg instance:user=admin:admin install instance".split())
-          .with_exposed_port(8080)
-        )
+        devpi_service = self.devpi_as_service(volume_name=devpi_volume)
+        devpi_service.start()
+        try:
+            result = (buildout
+              .with_workdir("/app")
+              .with_file("/app/buildout.cfg", buildout_cfg)
+              .with_service_binding("devpi", devpi_service) 
+              .with_exec(f"/app/bin/buildout buildout:index=http://devpi:3141/root/pypi/+simple versions:zc.buildout= versions.setuptools= instance:recipe=plone.recipe.zope2instance instance:eggs= buildout:parts= buildout:extends=https://dist.plone.org/release/{plone_version}/versions.cfg instance:user=admin:admin install instance".split())
+              .with_exposed_port(8080)
+            )
+        finally:
+            devpi_service.stop()
+        return result
 
     @function
     def as_service(self, base_image: str=DEFAULT_BASE_IMAGE, plone_version: str="6.1.4", devpi_volume: str="devpi_data") -> dagger.Service:
