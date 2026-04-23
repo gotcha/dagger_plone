@@ -90,7 +90,7 @@ class Plone:
         return dag.git("https://github.com/gotcha/dagger_plone").head().tree()
 
     @function(cache="never")
-    def export_cache_to_host(self, cache_volume_name: str, host_path: str, container_path: str = "/cache/data") -> dagger.Directory:
+    def export_cache_to_host(self, cache_volume_name: str, container_path: str = "/cache/data") -> dagger.Directory:
         """
         Export contents of a Dagger cache volume to a host directory.
         """
