@@ -1,1 +1,1 @@
-as-service | up --ports 8082:8080
+as-service --plone-version 6.0.15 | up --ports 8082:8080
