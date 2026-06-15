@@ -78,7 +78,7 @@ class Plone:
         return DEFAULT_BASE_IMAGE
 
     @function
-    def devpi_as_service(self, base_image: str="jonasal/devpi-server", volume_name: str="devpi_data") -> dagger.Service:
+    def devpi_as_service(self, base_image: str="jonasal/devpi-server:6.20.1", volume_name: str="devpi_data") -> dagger.Service:
         """Run Plone as a service"""
         cache_volume = dag.cache_volume(volume_name)
         server = dag.container().from_(base_image).with_env_variable("DEVPI_PASSWORD", "password").with_exposed_port(3141).with_mounted_cache("/devpi/server", cache_volume)
