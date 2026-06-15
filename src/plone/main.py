@@ -7,6 +7,17 @@ DEFAULT_BUILDOUT_CONTENT = """
 [buildout]
 """
 
+
+def make_buildout_command(plone_version, egg="Plone", versions={}):
+    version_args = " ".join(f"versions:{k}={v}" for k, v in versions.items())
+    return (
+        f"/app/bin/buildout buildout:index=http://devpi:3141/root/pypi/+simple "
+        f"instance:recipe=plone.recipe.zope2instance versions:zc.buildout= versions.setuptools= "
+        f"instance:eggs={egg} buildout:parts= {version_args} "
+        f"buildout:extends=https://dist.plone.org/release/{plone_version}/versions.cfg instance:user=admin:admin install instance"
+    )
+
+
 @object_type
 class Plone:
     @function
@@ -19,7 +30,7 @@ class Plone:
         )
 
     @function
-    def with_plone(self, buildout: dagger.Container, plone_version: str="6.0.15", devpi_volume: str="devpi_data") -> dagger.Container:
+    def with_plone(self, buildout: dagger.Container, buildout_command: str="", devpi_volume: str="devpi_data") -> dagger.Container:
         """Install Plone into a container where buildout is installed."""
         buildout.directory('/app')
         buildout.directory('/app/bin')
@@ -33,7 +44,7 @@ class Plone:
               .with_workdir("/app")
               .with_file("/app/buildout.cfg", buildout_cfg)
               .with_service_binding("devpi", devpi_service) 
-              .with_exec(f"/app/bin/buildout buildout:index=http://devpi:3141/root/pypi/+simple instance:recipe=plone.recipe.zope2instance versions:zc.buildout= versions.setuptools= instance:eggs=Plone buildout:parts= buildout:extends=https://dist.plone.org/release/{plone_version}/versions.cfg instance:user=admin:admin install instance".split())
+              .with_exec(buildout_command.split())
               .with_exposed_port(8080)
             )
         finally:
@@ -63,14 +74,25 @@ class Plone:
         return result
 
     @function
-    def as_service(self, base_image: str=DEFAULT_BASE_IMAGE, plone_version: str="6.1.4", devpi_volume: str="devpi_data") -> dagger.Service:
+    def as_service(self, base_image: str=DEFAULT_BASE_IMAGE, plone_version: str="6.1.4", devpi_volume: str="devpi_data", buildout_command: str="") -> dagger.Service:
         """Run Plone as a service"""
         python = dag.container().from_(base_image)
         buildout = self.with_buildout(python)
         zope = self.with_zope(buildout, plone_version=plone_version, devpi_volume=devpi_volume)
-        plone = self.with_plone(zope, plone_version=plone_version, devpi_volume=devpi_volume)
+        if buildout_command == "":
+            buildout_command = make_buildout_command(plone_version)
+        plone = self.with_plone(zope, buildout_command=buildout_command, devpi_volume=devpi_volume)
         # image_name = f"localhost/plone:{plone_version}-gc-dagger"
         return plone.as_service(args="bin/instance fg".split())
+
+    @function
+    def as_service_with_ck(self, base_image: str=DEFAULT_BASE_IMAGE, plone_version: str="6.1.4", devpi_volume: str="devpi_data") -> dagger.Service:
+        versions = dict()
+        versions['collective.ckeditor'] = "5.0.0"
+        versions['collective.quickupload'] = "2.0.0a1"
+        versions['collective.plonefinder'] = "2.0.0a1"
+        buildout_command = make_buildout_command(plone_version, "collective.ckeditor", versions)
+        return self.as_service(base_image, plone_version, devpi_volume, buildout_command)
 
     @function
     def default_base_image(self) -> str:
