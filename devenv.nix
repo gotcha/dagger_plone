@@ -27,8 +27,7 @@
 
   # https://devenv.sh/basics/
   enterShell = ''
-    hello         # Run scripts directly
-    git --version # Use packages
+    echo "This is dagger-plone."
   '';
 
   # https://devenv.sh/tasks/
