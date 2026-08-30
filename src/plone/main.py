@@ -30,13 +30,15 @@ class Plone:
         )
 
     @function
-    def with_plone(self, buildout: dagger.Container, buildout_command: str="", devpi_volume: str="devpi_data") -> dagger.Container:
+    def with_plone(self, buildout: dagger.Container, plone_version: str="6.1.4", buildout_command: str="", devpi_volume: str="devpi_data") -> dagger.Container:
         """Install Plone into a container where buildout is installed."""
         buildout.directory('/app')
         buildout.directory('/app/bin')
         buildout.file('/app/bin/python')
         buildout.file('/app/bin/buildout')
         buildout_cfg = dag.file('buildout.cfg', DEFAULT_BUILDOUT_CONTENT)
+        if buildout_command == "":
+            buildout_command = make_buildout_command(plone_version)
         devpi_service = self.devpi_as_service(volume_name=devpi_volume)
         devpi_service.start()
         try:
